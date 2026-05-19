@@ -88,6 +88,12 @@ claude mcp add --scope user npcsmarket-skill -- npc-skill-mcp
 claude mcp list
 ```
 
+### Chat smoke prompt (Codex / Claude Code)
+
+Use this single prompt to validate the full flow without hardcoding an NPC name:
+
+`Call random_npc with count 3, pick one candidate automatically, then call compose_prompt in debate mode using topic: "If AI skills are free, where does value concentrate and who captures it over time?" Finally call track_event with eventName "skill_compose".`
+
 Optional base URL override:
 
 ```bash

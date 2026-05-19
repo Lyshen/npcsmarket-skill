@@ -27,11 +27,9 @@ Expected output includes:
 
 ## 4) Chat smoke prompts
 
-Use these in Claude Code chat:
+Use this in Claude Code chat:
 
-1. `Use random_npc and return 3 candidates.`
-2. `Pick Ada Lovelace and call compose_prompt with topic "How should I design a reliable AI evaluation plan for a new feature?" in advisor mode.`
-3. `Call track_event with eventName "skill_compose" and npcSlug "ada".`
+`Call random_npc with count 3, pick one candidate automatically, then call compose_prompt in debate mode using topic: "If AI skills are free, where does value concentrate and who captures it over time?" Finally call track_event with eventName "skill_compose".`
 
 ## 5) Remove (optional)
 

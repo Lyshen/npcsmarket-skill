@@ -1,11 +1,11 @@
 {
-  "name": "npcsmarket-skill",
+  "name": "@npcsmarket/skill",
   "version": "0.1.0",
   "description": "Thin skill client for npcsmarket.com v1 API.",
   "type": "module",
   "main": "./src/index.js",
   "bin": {
-    "npc-skill": "./bin/npc-skill.js"
+    "npc-skill": "bin/npc-skill.js"
   },
   "files": [
     "bin",
@@ -37,5 +37,8 @@
   "homepage": "https://npcsmarket.com",
   "bugs": {
     "url": "https://github.com/Lyshen/npcsmarket-skill/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -5,7 +5,7 @@
 1. Create npm package owner account and make sure package name is available:
 
 ```bash
-npm view npcsmarket-skill
+npm view @npcsmarket/skill
 ```
 
 2. In GitHub repo settings, add secret:
@@ -31,5 +31,5 @@ git push --follow-tags
 4. Confirm package:
 
 ```bash
-npm view npcsmarket-skill version
+npm view @npcsmarket/skill version
 ```

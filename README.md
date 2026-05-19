@@ -46,6 +46,32 @@ npc-skill id
 npc-skill id --reset
 ```
 
+## MCP server usage (for Codex Chat and other MCP clients)
+
+After install, run local MCP server:
+
+```bash
+npc-skill-mcp
+```
+
+Available MCP tools:
+
+- `random_npc`
+- `compose_prompt`
+- `track_event`
+
+Example Codex MCP config snippet:
+
+```json
+{
+  "mcpServers": {
+    "npcsmarket-skill": {
+      "command": "npc-skill-mcp"
+    }
+  }
+}
+```
+
 Optional base URL override:
 
 ```bash

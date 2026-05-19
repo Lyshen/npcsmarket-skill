@@ -5,7 +5,8 @@
   "type": "module",
   "main": "./src/index.js",
   "bin": {
-    "npc-skill": "bin/npc-skill.js"
+    "npc-skill": "bin/npc-skill.js",
+    "npc-skill-mcp": "bin/npc-skill-mcp.js"
   },
   "files": [
     "bin",
@@ -20,6 +21,10 @@
     "test": "node --test",
     "check": "npm run test",
     "prepublishOnly": "npm run check"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.5",
+    "zod": "^3.25.76"
   },
   "keywords": [
     "skill",

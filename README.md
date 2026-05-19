@@ -12,13 +12,13 @@ Thin npm skill client for `https://npcsmarket.com/v1/*`.
 ## Install
 
 ```bash
-npm i npcsmarket-skill
+npm i @npcsmarket/skill
 ```
 
 CLI global usage:
 
 ```bash
-npm i -g npcsmarket-skill
+npm i -g @npcsmarket/skill
 npc-skill random --count 3
 ```
 
@@ -55,7 +55,7 @@ npc-skill random --base-url https://npcsmarket.com
 ## SDK usage
 
 ```js
-import { randomNpc, composePrompt, trackEvent } from "npcsmarket-skill";
+import { randomNpc, composePrompt, trackEvent } from "@npcsmarket/skill";
 
 const random = await randomNpc({ count: 3 });
 const bundle = await composePrompt({
@@ -98,7 +98,7 @@ npm publish --access public
 4. Validate:
 
 ```bash
-npm view npcsmarket-skill version
+npm view @npcsmarket/skill version
 ```
 
 ## Privacy

@@ -72,6 +72,28 @@ Example Codex MCP config snippet:
 }
 ```
 
+### Codex quick setup
+
+```bash
+npm i -g @npcsmarket/skill@latest
+codex mcp add npcsmarket-skill -- npc-skill-mcp
+codex mcp list
+```
+
+### Claude Code quick setup
+
+```bash
+npm i -g @npcsmarket/skill@latest
+claude mcp add --scope user npcsmarket-skill -- npc-skill-mcp
+claude mcp list
+```
+
+If your shell cannot resolve `npc-skill-mcp`, use absolute path:
+
+```bash
+claude mcp add --scope user npcsmarket-skill -- ~/.petclaw/node/bin/npc-skill-mcp
+```
+
 Optional base URL override:
 
 ```bash

@@ -12,6 +12,7 @@
     ".agents",
     ".codex-plugin",
     ".mcp.json",
+    "assets",
     "bin",
     "skills",
     "src",

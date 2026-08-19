@@ -1,82 +1,99 @@
-# npcsmarket-skill
+# NPCsMarket Codex Plugin
 
-Thin npm skill client for `https://npcsmarket.com/v1/*`.
+Think with historical minds while Codex works.
 
-## MVP scope
+NPCsMarket is a Codex plugin beta for the small pockets of time when installs, tests, builds, reviews, or agent tasks are running. Ask Turing about a stubborn bug, Sun Tzu about launch scope, or let NPCsMarket pick three perspectives for an architecture tradeoff.
 
-- `random`: get 1 or 3 random NPCs.
-- `compose`: generate standardized prompt bundle from topic + NPC.
-- `event`: send lightweight tracking event.
-- transparent local `client_id` persisted in `~/.npcsmarket-skill/config.json`.
+## What it includes
 
-## Install
+- A Codex plugin manifest at `.codex-plugin/plugin.json`.
+- A bundled MCP config at `.mcp.json`.
+- A Codex skill at `skills/npcsmarket-companion/SKILL.md`.
+- The npm CLI and MCP runtime published as `@npcsmarket/skill`.
+
+## Codex beta install
+
+### From this local checkout
+
+Use this while developing or testing locally:
 
 ```bash
-npm i @npcsmarket/skill
+cd /Users/lyshen/Desktop/project/npcsmarket-skill
+npm install
+codex plugin marketplace add .
+codex plugin add npcsmarket@npcsmarket-beta
+codex plugin list
 ```
 
-CLI global usage:
+Then start a new Codex task and try:
+
+```text
+Use NPCsMarket. Pick 3 random NPCs, choose one, and ask it to advise me on whether to cut scope before launch.
+```
+
+Success means Codex can use the plugin, call `random_npc`, call `compose_prompt`, and return a useful persona-inspired answer.
+
+### From GitHub after pushing this branch and publishing npm beta
+
+```bash
+codex plugin marketplace add Lyshen/npcsmarket-skill --ref codex/plugin-beta
+codex plugin add npcsmarket@npcsmarket-beta
+codex plugin list
+```
+
+Start a new Codex task after installing so Codex reloads the plugin, skill, and MCP tools. This path requires `@npcsmarket/skill@0.2.0-beta.0` to exist on npm because the GitHub plugin cache does not include `node_modules`.
+
+## Available Codex MCP tools
+
+- `random_npc`: returns 1 or 3 historical-mind candidates.
+- `compose_prompt`: creates a prompt bundle for a chosen NPC, topic, and mode.
+
+The public Codex MCP surface is read-only. Internal event tracking is not exposed as a Codex MCP tool.
+
+## CLI usage
+
+Install the npm package directly if you want the standalone CLI:
 
 ```bash
 npm i -g @npcsmarket/skill
 npc-skill random --count 3
 ```
 
-## CLI usage
-
-```bash
-npc-skill random --count 1 --json
-npc-skill random --count 3
-```
-
 ```bash
 npc-skill compose \
   --name "Sun Tzu" \
-  --topic "How should we validate demand for this skill?" \
+  --topic "Should we cut scope before launch?" \
   --mode advisor \
   --json
 ```
 
-```bash
-npc-skill event --name skill_compose --slug sun-tzu --meta '{"source":"cli"}'
-```
+## MCP runtime
 
-```bash
-npc-skill id
-npc-skill id --reset
-```
-
-## MCP server usage (for Codex Chat and other MCP clients)
-
-After install, run local MCP server:
-
-```bash
-npc-skill-mcp
-```
-
-Available MCP tools:
-
-- `random_npc`
-- `compose_prompt`
-- `track_event`
-
-Example Codex MCP config snippet:
+The plugin starts the MCP server through the local package:
 
 ```json
 {
   "mcpServers": {
-    "npcsmarket-skill": {
-      "command": "npc-skill-mcp"
+    "npcsmarket": {
+      "cwd": ".",
+      "command": "node",
+      "args": ["./bin/npc-skill-mcp-bootstrap.js"]
     }
   }
 }
 ```
 
-Optional base URL override:
+The bootstrap runs the local MCP server when dependencies are present. For external installs without local dependencies, it falls back to `npx -y -p @npcsmarket/skill@0.2.0-beta.0 npc-skill-mcp`, so publish that npm beta before sharing the GitHub install command widely.
+
+For manual MCP setup outside the plugin:
 
 ```bash
-npc-skill random --base-url https://npcsmarket.com
+npm i -g @npcsmarket/skill
+codex mcp add npcsmarket-skill -- npc-skill-mcp
+codex mcp list
 ```
+
+The plugin route is preferred for Codex distribution because users do not need to edit `~/.codex/config.toml` by hand.
 
 ## SDK usage
 
@@ -97,36 +114,40 @@ await trackEvent({ eventName: "skill_compose", npcSlug: "sun-tzu" });
 ```bash
 npm install
 npm test
+npm pack --dry-run
 ```
 
-## Release and publish
-
-1. Update version:
+Validate the Codex plugin shape:
 
 ```bash
-npm version patch
+python3 /Users/lyshen/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py .
 ```
 
-2. Verify:
+## Release
 
-```bash
-npm test
-npm pack
-```
+For the Codex plugin beta, push the `codex/plugin-beta` branch and install from the GitHub marketplace command above.
 
-3. Publish to npm (public):
+Publishing is manual. Merging to `main` does not publish npm automatically.
+
+Option A: publish from this machine after logging in to npm CLI:
 
 ```bash
 npm login
-npm publish --access public
+npm whoami
+npm test
+npm publish --tag beta --access public
+npm view @npcsmarket/skill@0.2.0-beta.0 version
 ```
 
-4. Validate:
+Option B: publish from GitHub Actions:
 
-```bash
-npm view @npcsmarket/skill version
-```
+1. Push this branch or merge it.
+2. Open GitHub Actions.
+3. Run the `Publish npm` workflow manually.
+4. Choose the `beta` npm dist tag.
+
+Use the `beta` dist tag until the Codex plugin package is ready to become the default `latest`. The plugin bootstrap falls back to `@npcsmarket/skill@0.2.0-beta.0`, so publish that package version before sharing the GitHub install command widely.
 
 ## Privacy
 
-The package sends only lightweight usage metadata (`client_id`, event name, optional npc slug, optional custom metadata). It does not upload full conversation content by default.
+NPCsMarket sends the specific topic you provide to `https://npcsmarket.com` when composing a prompt bundle. Do not include secrets, full source files, credentials, or private customer data in the topic. The package may also create a local client id in `~/.npcsmarket-skill/config.json` for lightweight diagnostics and event calls. It does not upload repository files by default.

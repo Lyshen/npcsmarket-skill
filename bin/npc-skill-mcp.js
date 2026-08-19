@@ -4,61 +4,70 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
-import { composePrompt, randomNpc, trackEvent } from "../src/index.js";
+import { composePrompt, randomNpc } from "../src/index.js";
 
-const server = new McpServer({
-  name: "@npcsmarket/skill-mcp",
-  version: "0.1.0",
-});
+const server = new McpServer(
+  {
+    name: "npcsmarket",
+    version: "0.2.0-beta.0",
+  },
+  {
+    instructions:
+      "NPCsMarket helps Codex users think with historical-mind personas during coding wait time. Use random_npc to choose candidates and compose_prompt to build a concise perspective prompt for the user's topic.",
+  },
+);
 
-server.tool(
+function stripInternalFields(response) {
+  const { requestId: _requestId, ...publicResponse } = response;
+  return publicResponse;
+}
+
+server.registerTool(
   "random_npc",
-  "Get one random NPC or a list of 3 random NPCs.",
   {
-    count: z.number().int().min(1).max(3).optional().default(1),
-    baseUrl: z.string().url().optional(),
+    title: "Get random NPCs",
+    description:
+      "Use when the user wants historical-mind candidates for coding, product, strategy, debugging, or reflection. Returns either 1 NPC or 3 candidates to choose from.",
+    inputSchema: {
+      count: z.number().int().min(1).max(3).optional().default(1),
+    },
+    annotations: {
+      readOnlyHint: true,
+      openWorldHint: false,
+      destructiveHint: false,
+    },
   },
-  async ({ count, baseUrl }) => {
-    const response = await randomNpc({ count: count === 3 ? 3 : 1, baseUrl });
+  async ({ count }) => {
+    const response = stripInternalFields(await randomNpc({ count: count === 3 ? 3 : 1 }));
     return {
-      content: [{ type: "text", text: JSON.stringify(response) }],
+      content: [{ type: "text", text: JSON.stringify(response, null, 2) }],
       structuredContent: response,
     };
   },
 );
 
-server.tool(
+server.registerTool(
   "compose_prompt",
-  "Create a prompt bundle for an NPC with topic and mode.",
   {
-    topic: z.string().min(1).max(800),
-    mode: z.enum(["socratic", "debate", "advisor"]).optional().default("socratic"),
-    npcName: z.string().min(1).optional(),
-    npcSlug: z.string().min(1).optional(),
-    baseUrl: z.string().url().optional(),
+    title: "Compose NPC prompt",
+    description:
+      "Use when the user has a topic and wants a specific historical NPC to advise, debate, or question their thinking.",
+    inputSchema: {
+      topic: z.string().min(1).max(800),
+      mode: z.enum(["socratic", "debate", "advisor"]).optional().default("socratic"),
+      npcName: z.string().min(1).optional(),
+      npcSlug: z.string().min(1).optional(),
+    },
+    annotations: {
+      readOnlyHint: true,
+      openWorldHint: false,
+      destructiveHint: false,
+    },
   },
-  async ({ topic, mode, npcName, npcSlug, baseUrl }) => {
-    const response = await composePrompt({ topic, mode, npcName, npcSlug }, { baseUrl });
+  async ({ topic, mode, npcName, npcSlug }) => {
+    const response = stripInternalFields(await composePrompt({ topic, mode, npcName, npcSlug }));
     return {
-      content: [{ type: "text", text: JSON.stringify(response) }],
-      structuredContent: response,
-    };
-  },
-);
-
-server.tool(
-  "track_event",
-  "Send a lightweight analytics event.",
-  {
-    eventName: z.string().min(1).max(120),
-    npcSlug: z.string().optional(),
-    metadata: z.record(z.unknown()).optional(),
-    baseUrl: z.string().url().optional(),
-  },
-  async ({ eventName, npcSlug, metadata, baseUrl }) => {
-    const response = await trackEvent({ eventName, npcSlug, metadata }, { baseUrl });
-    return {
-      content: [{ type: "text", text: JSON.stringify(response) }],
+      content: [{ type: "text", text: JSON.stringify(response, null, 2) }],
       structuredContent: response,
     };
   },

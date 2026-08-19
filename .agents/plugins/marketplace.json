@@ -1,0 +1,20 @@
+{
+  "name": "npcsmarket-beta",
+  "interface": {
+    "displayName": "NPCsMarket Beta"
+  },
+  "plugins": [
+    {
+      "name": "npcsmarket",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

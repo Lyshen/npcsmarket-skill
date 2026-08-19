@@ -1,0 +1,43 @@
+{
+  "name": "npcsmarket",
+  "version": "0.2.0-beta.0",
+  "description": "Think with historical minds while Codex works.",
+  "author": {
+    "name": "NPCsMarket",
+    "email": "hello@npcsmarket.com",
+    "url": "https://npcsmarket.com"
+  },
+  "homepage": "https://npcsmarket.com",
+  "repository": "https://github.com/Lyshen/npcsmarket-skill",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "mcp",
+    "developer-tools",
+    "historical-personas",
+    "thinking",
+    "debugging",
+    "strategy"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "NPCsMarket",
+    "shortDescription": "Historical-mind companion for Codex wait time",
+    "longDescription": "NPCsMarket lets Codex users ask historical-mind personas for debugging, architecture, product, and strategy perspectives while tests, installs, builds, and agent tasks run.",
+    "developerName": "NPCsMarket",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read"
+    ],
+    "websiteURL": "https://npcsmarket.com",
+    "defaultPrompt": [
+      "Ask Turing to reason about this bug.",
+      "Ask Sun Tzu whether to cut scope.",
+      "Pick 3 NPCs for this architecture tradeoff."
+    ],
+    "brandColor": "#7A1F2B",
+    "screenshots": []
+  }
+}

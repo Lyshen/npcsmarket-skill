@@ -1,7 +1,7 @@
 {
   "name": "@npcsmarket/skill",
-  "version": "0.1.1",
-  "description": "Thin skill client for npcsmarket.com v1 API.",
+  "version": "0.2.0-beta.0",
+  "description": "Codex plugin and MCP client for NPCsMarket historical-mind personas.",
   "type": "module",
   "main": "./src/index.js",
   "bin": {
@@ -9,7 +9,11 @@
     "npc-skill-mcp": "bin/npc-skill-mcp.js"
   },
   "files": [
+    ".agents",
+    ".codex-plugin",
+    ".mcp.json",
     "bin",
+    "skills",
     "src",
     "README.md",
     "LICENSE"
@@ -27,6 +31,9 @@
     "zod": "^3.25.76"
   },
   "keywords": [
+    "codex",
+    "codex-plugin",
+    "mcp",
     "skill",
     "prompt",
     "npc",

@@ -1,154 +1,115 @@
 # NPCsMarket Codex Plugin
 
-Think with historical minds while Codex works.
+[English](#english) | [中文](#中文)
 
-NPCsMarket is a Codex plugin beta for the small pockets of time when installs, tests, builds, reviews, or agent tasks are running. Ask Turing about a stubborn bug, Sun Tzu about launch scope, or let NPCsMarket pick three perspectives for an architecture tradeoff.
+<a id="english"></a>
+## English
 
-## What it includes
+NPCsMarket brings historical personas and practical thinking modes into Codex. Use it to discuss product positioning, design critique, competitive strategy, marketing narrative, systems leverage, debugging, and architecture while Codex works.
 
-- A Codex plugin manifest at `.codex-plugin/plugin.json`.
-- A bundled MCP config at `.mcp.json`.
-- A Codex skill at `skills/npcsmarket-companion/SKILL.md`.
-- The npm CLI and MCP runtime published as `@npcsmarket/skill`.
-
-## Codex beta install
-
-### From this local checkout
-
-Use this while developing or testing locally:
+## Install
 
 ```bash
-cd /Users/lyshen/Desktop/project/npcsmarket-skill
-npm install
-codex plugin marketplace add .
-codex plugin add npcsmarket@npcsmarket-beta
-codex plugin list
+codex plugin marketplace add Lyshen/npcsmarket-skill --ref main
+codex plugin add npcsmarket@npcsmarket
 ```
 
-Then start a new Codex task and try:
+Start a new Codex task after installing so the plugin, skill, and MCP tools are loaded.
+
+## Try It
+
+Copy one of these into Codex:
 
 ```text
-Use NPCsMarket. Pick 3 random NPCs, choose one, and ask it to advise me on whether to cut scope before launch.
+Use NPCsMarket. Pick 3 random NPCs for my product positioning, compare their lenses, and choose one to advise me.
+
+Use NPCsMarket. Pick 3 random NPCs for this launch plan and tell me which perspective is most useful.
+
+Use NPCsMarket. Ask Peter Drucker to audit our ICP, pricing, and first sales motion.
+
+Use NPCsMarket. Ask Sun Tzu to find our competitive wedge before launch.
+
+Use NPCsMarket. Ask Donella Meadows to find leverage points in our activation funnel.
+
+Use NPCsMarket. Ask Marcel Duchamp to reframe our landing page and category story.
+
+Use NPCsMarket. Ask Edward Said to critique the market narrative we inherited.
+
+Use NPCsMarket. Ask Socrates to turn this roadmap into uncomfortable product-discovery questions.
+
+Use NPCsMarket. Ask Alan Turing to reason about edge cases in this agent workflow.
 ```
 
-Success means Codex can use the plugin, call `random_npc`, call `compose_prompt`, and return a useful persona-inspired answer.
+## What It Adds
 
-### From GitHub after pushing this branch and publishing npm beta
+- `random_npc`: get 1 or 3 historical persona candidates.
+- `compose_prompt`: build a focused persona prompt for a topic and mode.
+- `npcsmarket-companion`: a Codex skill that decides when to use the NPCsMarket tools.
 
-```bash
-codex plugin marketplace add Lyshen/npcsmarket-skill --ref codex/plugin-beta
-codex plugin add npcsmarket@npcsmarket-beta
-codex plugin list
-```
+The Codex tools are read-only and do not modify your project.
 
-Start a new Codex task after installing so Codex reloads the plugin, skill, and MCP tools. This path requires `@npcsmarket/skill@0.2.0-beta.0` to exist on npm because the GitHub plugin cache does not include `node_modules`.
-
-## Available Codex MCP tools
-
-- `random_npc`: returns 1 or 3 historical-mind candidates.
-- `compose_prompt`: creates a prompt bundle for a chosen NPC, topic, and mode.
-
-The public Codex MCP surface is read-only. Internal event tracking is not exposed as a Codex MCP tool.
-
-## CLI usage
-
-Install the npm package directly if you want the standalone CLI:
+## CLI
 
 ```bash
-npm i -g @npcsmarket/skill
+npm i -g @npcsmarket/skill@latest
 npc-skill random --count 3
 ```
 
 ```bash
 npc-skill compose \
-  --name "Sun Tzu" \
-  --topic "Should we cut scope before launch?" \
-  --mode advisor \
-  --json
+  --name "Donella Meadows" \
+  --topic "Find leverage points in our activation funnel" \
+  --mode advisor
 ```
-
-## MCP runtime
-
-The plugin starts the MCP server through the local package:
-
-```json
-{
-  "mcpServers": {
-    "npcsmarket": {
-      "cwd": ".",
-      "command": "node",
-      "args": ["./bin/npc-skill-mcp-bootstrap.js"]
-    }
-  }
-}
-```
-
-The bootstrap runs the local MCP server when dependencies are present. For external installs without local dependencies, it falls back to `npx -y -p @npcsmarket/skill@0.2.0-beta.0 npc-skill-mcp`, so publish that npm beta before sharing the GitHub install command widely.
-
-For manual MCP setup outside the plugin:
-
-```bash
-npm i -g @npcsmarket/skill
-codex mcp add npcsmarket-skill -- npc-skill-mcp
-codex mcp list
-```
-
-The plugin route is preferred for Codex distribution because users do not need to edit `~/.codex/config.toml` by hand.
-
-## SDK usage
-
-```js
-import { randomNpc, composePrompt, trackEvent } from "@npcsmarket/skill";
-
-const random = await randomNpc({ count: 3 });
-const bundle = await composePrompt({
-  npcName: "Sun Tzu",
-  topic: "API versioning strategy",
-  mode: "advisor",
-});
-await trackEvent({ eventName: "skill_compose", npcSlug: "sun-tzu" });
-```
-
-## Development
-
-```bash
-npm install
-npm test
-npm pack --dry-run
-```
-
-Validate the Codex plugin shape:
-
-```bash
-python3 /Users/lyshen/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py .
-```
-
-## Release
-
-For the Codex plugin beta, push the `codex/plugin-beta` branch and install from the GitHub marketplace command above.
-
-Publishing is manual. Merging to `main` does not publish npm automatically.
-
-Option A: publish from this machine after logging in to npm CLI:
-
-```bash
-npm login
-npm whoami
-npm test
-npm publish --tag beta --access public
-npm view @npcsmarket/skill@0.2.0-beta.0 version
-```
-
-Option B: publish from GitHub Actions:
-
-1. Push this branch or merge it.
-2. In npm package settings, configure a GitHub Actions Trusted Publisher for `Lyshen/npcsmarket-skill` and workflow file `publish.yml`.
-3. Open GitHub Actions.
-4. Run the `Publish npm` workflow manually.
-5. Choose the `beta` npm dist tag.
-
-Use the `beta` dist tag until the Codex plugin package is ready to become the default `latest`. The plugin bootstrap falls back to `@npcsmarket/skill@0.2.0-beta.0`, so publish that package version before sharing the GitHub install command widely.
 
 ## Privacy
 
-NPCsMarket sends the specific topic you provide to `https://npcsmarket.com` when composing a prompt bundle. Do not include secrets, full source files, credentials, or private customer data in the topic. The package may also create a local client id in `~/.npcsmarket-skill/config.json` for lightweight diagnostics and event calls. It does not upload repository files by default.
+NPCsMarket sends the topic you provide to `https://npcsmarket.com` when composing a prompt bundle. Do not include secrets, full source files, credentials, or private customer data in the topic. The package may create a local client id in `~/.npcsmarket-skill/config.json` for lightweight diagnostics.
+
+<a id="中文"></a>
+## 中文
+
+NPCsMarket 是一个 Codex 插件，让你在 Codex 跑测试、安装依赖、构建、审查或执行 agent 任务时，用不同历史人物和思维模式讨论产品、设计、竞争、营销、系统杠杆、调试和架构问题。
+
+## 安装
+
+```bash
+codex plugin marketplace add Lyshen/npcsmarket-skill --ref main
+codex plugin add npcsmarket@npcsmarket
+```
+
+安装后新开一个 Codex 任务，让插件、skill 和 MCP 工具重新加载。
+
+## 试用
+
+```text
+使用 NPCsMarket。随机选 3 个 NPC 来分析我的产品定位，比较他们的思维视角，并选一个给我建议。
+
+使用 NPCsMarket。随机选 3 个 NPC 来评估这个发布计划，告诉我哪个视角最有价值。
+
+使用 NPCsMarket。请 Peter Drucker 审视我们的 ICP、定价和第一阶段销售动作。
+
+使用 NPCsMarket。请 Sun Tzu 帮我找到发布前的竞争切入点。
+
+使用 NPCsMarket。请 Donella Meadows 找出激活漏斗里的系统杠杆点。
+
+使用 NPCsMarket。请 Marcel Duchamp 重新定义我们的落地页和品类故事。
+
+使用 NPCsMarket。请 Edward Said 批判我们继承的市场叙事。
+
+使用 NPCsMarket。请 Socrates 把这份路线图变成尖锐的产品发现问题。
+
+使用 NPCsMarket。请 Alan Turing 分析这个 agent workflow 里的边界情况。
+```
+
+## 包含内容
+
+- `random_npc`：随机获取 1 个或 3 个历史人物视角。
+- `compose_prompt`：为指定话题和人物生成可执行的思考 prompt。
+- `npcsmarket-companion`：帮助 Codex 判断什么时候调用 NPCsMarket。
+
+Codex 工具是只读的，不会修改你的项目。
+
+## 隐私
+
+NPCsMarket 在生成 prompt bundle 时会把你输入的话题发送到 `https://npcsmarket.com`。不要输入密钥、完整源码、凭据或客户隐私数据。这个包可能会在本地 `~/.npcsmarket-skill/config.json` 创建一个 client id，用于轻量诊断。

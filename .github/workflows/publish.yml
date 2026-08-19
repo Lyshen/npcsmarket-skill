@@ -2,15 +2,6 @@ name: Publish npm
 
 on:
   workflow_dispatch:
-    inputs:
-      tag:
-        description: npm dist tag
-        required: true
-        default: beta
-        type: choice
-        options:
-          - beta
-          - latest
 
 jobs:
   publish:
@@ -28,4 +19,4 @@ jobs:
       - run: npm install -g npm@latest
       - run: npm ci
       - run: npm test
-      - run: npm publish --tag "${{ inputs.tag }}" --access public
+      - run: npm publish --tag latest --access public

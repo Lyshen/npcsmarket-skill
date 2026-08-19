@@ -2,34 +2,25 @@
 
 ## One-time setup
 
-1. Create npm package owner account and make sure package name is available:
+1. Keep `@npcsmarket/skill` public on npm.
+2. Configure npm Trusted Publisher for GitHub Actions:
+   - package: `@npcsmarket/skill`
+   - repository: `Lyshen/npcsmarket-skill`
+   - workflow filename: `publish.yml`
+   - allowed action: npm publish
+3. Keep `publishConfig.access` set to `public` in `package.json`.
 
-```bash
-npm view @npcsmarket/skill
-```
-
-2. In GitHub repo settings, add secret:
-- `NPM_TOKEN`: npm automation token with publish permission.
-
-3. Keep package as public in `package.json` and publish with `--access public`.
-
-## Manual local release
+## Release
 
 ```bash
 npm ci
 npm test
-npm version patch
-npm publish --access public
-git push --follow-tags
+gh workflow run publish.yml --ref main
 ```
 
-## GitHub Actions release
-
-1. Push code to `main`.
-2. Open GitHub Actions.
-3. Run workflow `Publish npm`.
-4. Confirm package:
+Confirm package:
 
 ```bash
 npm view @npcsmarket/skill version
+npm view @npcsmarket/skill dist-tags --json
 ```

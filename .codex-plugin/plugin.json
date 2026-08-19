@@ -1,7 +1,7 @@
 {
   "name": "npcsmarket",
-  "version": "0.2.0-beta.0",
-  "description": "Think with historical minds while Codex works.",
+  "version": "0.2.1",
+  "description": "Persona thinking modes for Codex work sessions.",
   "author": {
     "name": "NPCsMarket",
     "email": "hello@npcsmarket.com",
@@ -23,8 +23,8 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "NPCsMarket",
-    "shortDescription": "Historical-mind companion for Codex wait time",
-    "longDescription": "NPCsMarket lets Codex users ask historical-mind personas for debugging, architecture, product, and strategy perspectives while tests, installs, builds, and agent tasks run.",
+    "shortDescription": "Historical personas and thinking modes for Codex",
+    "longDescription": "NPCsMarket lets Codex users discuss product, design, competitive strategy, marketing, systems thinking, and engineering questions with historical personas while Codex handles builds, tests, reviews, and agent tasks.",
     "developerName": "NPCsMarket",
     "category": "Developer Tools",
     "capabilities": [
@@ -33,9 +33,9 @@
     ],
     "websiteURL": "https://npcsmarket.com",
     "defaultPrompt": [
-      "Ask Turing to reason about this bug.",
-      "Ask Sun Tzu whether to cut scope.",
-      "Pick 3 NPCs for this architecture tradeoff."
+      "Pick 3 NPCs for my product positioning and choose the sharpest lens.",
+      "Ask Peter Drucker to audit our ICP, pricing, and first sales motion.",
+      "Ask Marcel Duchamp to reframe our landing page and category story."
     ],
     "brandColor": "#7A1F2B",
     "screenshots": []

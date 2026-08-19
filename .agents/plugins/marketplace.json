@@ -1,7 +1,7 @@
 {
-  "name": "npcsmarket-beta",
+  "name": "npcsmarket",
   "interface": {
-    "displayName": "NPCsMarket Beta"
+    "displayName": "NPCsMarket"
   },
   "plugins": [
     {

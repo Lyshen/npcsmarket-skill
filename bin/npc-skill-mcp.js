@@ -9,11 +9,11 @@ import { composePrompt, randomNpc } from "../src/index.js";
 const server = new McpServer(
   {
     name: "npcsmarket",
-    version: "0.2.0-beta.0",
+    version: "0.2.1",
   },
   {
     instructions:
-      "NPCsMarket helps Codex users think with historical-mind personas during coding wait time. Use random_npc to choose candidates and compose_prompt to build a concise perspective prompt for the user's topic.",
+      "NPCsMarket helps Codex users discuss product, design, strategy, marketing, and engineering questions through historical personas and practical thinking modes. Use random_npc to discover candidates and compose_prompt to build a focused prompt for the user's topic.",
   },
 );
 

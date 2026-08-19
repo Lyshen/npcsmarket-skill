@@ -1,7 +1,7 @@
 {
   "name": "@npcsmarket/skill",
-  "version": "0.2.0-beta.0",
-  "description": "Codex plugin and MCP client for NPCsMarket historical-mind personas.",
+  "version": "0.2.1",
+  "description": "Codex plugin for historical personas and practical thinking modes.",
   "type": "module",
   "main": "./src/index.js",
   "bin": {

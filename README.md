@@ -142,9 +142,10 @@ npm view @npcsmarket/skill@0.2.0-beta.0 version
 Option B: publish from GitHub Actions:
 
 1. Push this branch or merge it.
-2. Open GitHub Actions.
-3. Run the `Publish npm` workflow manually.
-4. Choose the `beta` npm dist tag.
+2. In npm package settings, configure a GitHub Actions Trusted Publisher for `Lyshen/npcsmarket-skill` and workflow file `publish.yml`.
+3. Open GitHub Actions.
+4. Run the `Publish npm` workflow manually.
+5. Choose the `beta` npm dist tag.
 
 Use the `beta` dist tag until the Codex plugin package is ready to become the default `latest`. The plugin bootstrap falls back to `@npcsmarket/skill@0.2.0-beta.0`, so publish that package version before sharing the GitHub install command widely.
 

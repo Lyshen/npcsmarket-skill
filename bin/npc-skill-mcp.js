@@ -9,7 +9,7 @@ import { composePrompt, randomNpc } from "../src/index.js";
 const server = new McpServer(
   {
     name: "npcsmarket",
-    version: "0.2.2",
+    version: "0.2.3",
   },
   {
     instructions:

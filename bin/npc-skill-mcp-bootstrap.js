@@ -14,7 +14,7 @@ const hasLocalDependencies =
 const command = hasLocalDependencies ? process.execPath : "npx";
 const args = hasLocalDependencies
   ? [localServer]
-  : ["-y", "-p", "@npcsmarket/skill@0.2.1", "npc-skill-mcp"];
+  : ["-y", "-p", "@npcsmarket/skill@0.2.2", "npc-skill-mcp"];
 
 const child = spawn(command, args, {
   cwd: rootDir,

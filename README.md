@@ -5,7 +5,7 @@
 <a id="english"></a>
 ## English
 
-NPCsMarket brings historical personas and practical thinking modes into Codex. Use it to discuss product positioning, design critique, competitive strategy, marketing narrative, systems leverage, debugging, and architecture while Codex works.
+NPCsMarket brings historical personas and practical thinking modes into Codex. Use it to discuss product positioning, design critique, competitive strategy, marketing narrative, systems leverage, debugging, and architecture through a figure's reasoning pattern and first-person voice.
 
 ## Install
 
@@ -21,9 +21,9 @@ Start a new Codex task after installing so the plugin, skill, and MCP tools are 
 Copy one of these into Codex:
 
 ```text
-Use NPCsMarket. Pick 3 random NPCs for my product positioning, compare their lenses, and choose one to advise me.
+Use NPCsMarket. Pick 3 random NPCs for my product positioning, choose one, and answer through that figure's reasoning pattern and first-person voice.
 
-Use NPCsMarket. Pick 3 random NPCs for this launch plan and tell me which perspective is most useful.
+Use NPCsMarket. Pick 3 random NPCs for this launch plan, choose one, and debate me through that figure's historical frame.
 
 Use NPCsMarket. Ask Peter Drucker to audit our ICP, pricing, and first sales motion.
 
@@ -69,7 +69,7 @@ NPCsMarket sends the topic you provide to `https://npcsmarket.com` when composin
 <a id="中文"></a>
 ## 中文
 
-NPCsMarket 是一个 Codex 插件，让你在 Codex 跑测试、安装依赖、构建、审查或执行 agent 任务时，用不同历史人物和思维模式讨论产品、设计、竞争、营销、系统杠杆、调试和架构问题。
+NPCsMarket 是一个 Codex 插件，让你在 Codex 跑测试、安装依赖、构建、审查或执行 agent 任务时，用不同历史人物的思维模式和第一人称口吻讨论产品、设计、竞争、营销、系统杠杆、调试和架构问题。
 
 ## 安装
 
@@ -83,9 +83,9 @@ codex plugin add npcsmarket@npcsmarket
 ## 试用
 
 ```text
-使用 NPCsMarket。随机选 3 个 NPC 来分析我的产品定位，比较他们的思维视角，并选一个给我建议。
+使用 NPCsMarket。随机选 3 个 NPC 来分析我的产品定位，选一个，并用这个人物的思维方式和第一人称口吻回答我。
 
-使用 NPCsMarket。随机选 3 个 NPC 来评估这个发布计划，告诉我哪个视角最有价值。
+使用 NPCsMarket。随机选 3 个 NPC 来评估这个发布计划，选一个，并用这个人物的历史分析框架和我辩论。
 
 使用 NPCsMarket。请 Peter Drucker 审视我们的 ICP、定价和第一阶段销售动作。
 

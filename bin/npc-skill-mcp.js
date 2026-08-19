@@ -22,6 +22,31 @@ function stripInternalFields(response) {
   return publicResponse;
 }
 
+function withCodexVoiceContract(response) {
+  if (!response?.bundle?.prompts?.starter || !response?.npc?.name) return response;
+  const voiceContract = [
+    "",
+    "Codex persona contract:",
+    `- Answer in first person as ${response.npc.name}.`,
+    `- Do not say "from ${response.npc.name}'s perspective" or "${response.npc.name} would say."`,
+    "- Speak directly to the user as the persona.",
+    "- Reason through the persona's historical framework, not as a generic strategist.",
+    "- Translate the user's modern topic into the persona's native concerns, values, tradeoffs, and blind spots.",
+    "- Use the returned character.prompt and framework.steps as the primary reasoning contract.",
+    "- Stay in this voice for follow-up debate unless the user asks to leave character.",
+  ].join("\n");
+  return {
+    ...response,
+    bundle: {
+      ...response.bundle,
+      prompts: {
+        ...response.bundle.prompts,
+        starter: `${response.bundle.prompts.starter}${voiceContract}`,
+      },
+    },
+  };
+}
+
 server.registerTool(
   "random_npc",
   {
@@ -65,7 +90,9 @@ server.registerTool(
     },
   },
   async ({ topic, mode, npcName, npcSlug }) => {
-    const response = stripInternalFields(await composePrompt({ topic, mode, npcName, npcSlug }));
+    const response = withCodexVoiceContract(
+      stripInternalFields(await composePrompt({ topic, mode, npcName, npcSlug })),
+    );
     return {
       content: [{ type: "text", text: JSON.stringify(response, null, 2) }],
       structuredContent: response,

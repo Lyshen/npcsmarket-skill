@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { composePrompt, getClientId, randomNpc, trackEvent } from "../src/index.js";
+import { composePrompt, getClientId, randomNpc, shareConversation, trackEvent } from "../src/index.js";
 import { resetClientId } from "../src/client-id.js";
 
 function printUsage() {
@@ -11,6 +11,7 @@ function printUsage() {
       "Commands:",
       "  random [--count 1|3] [--json]",
       "  compose --topic <text> [--name <npcName> | --slug <npcSlug>] [--mode socratic|debate|advisor] [--json]",
+      "  share --name <npcName> --topic <text> --title <text> --excerpt <text> --consent [--slug <npcSlug>] [--json]",
       "  event --name <eventName> [--slug <npcSlug>] [--meta '{\"k\":\"v\"}'] [--json]",
       "  id [--reset]",
       "",
@@ -94,6 +95,28 @@ async function runEvent(args) {
   process.stdout.write("ok\n");
 }
 
+async function runShare(args) {
+  const npcName = getFlag(args, "--name");
+  const npcSlug = getFlag(args, "--slug") ?? undefined;
+  const topic = getFlag(args, "--topic");
+  const title = getFlag(args, "--title");
+  const excerpt = getFlag(args, "--excerpt");
+  const baseUrl = getFlag(args, "--base-url") ?? undefined;
+
+  if (!hasFlag(args, "--consent")) throw new Error("Missing --consent");
+  if (!npcName) throw new Error("Missing --name");
+  if (!topic) throw new Error("Missing --topic");
+  if (!title) throw new Error("Missing --title");
+  if (!excerpt) throw new Error("Missing --excerpt");
+
+  const result = await shareConversation(
+    { consent: true, npcName, npcSlug, topic, title, excerpt },
+    { baseUrl },
+  );
+  if (hasFlag(args, "--json")) return printJson(result);
+  process.stdout.write(`${result.share.url}\n`);
+}
+
 function runId(args) {
   const clientId = hasFlag(args, "--reset") ? resetClientId() : getClientId();
   process.stdout.write(`${clientId}\n`);
@@ -109,6 +132,7 @@ async function main() {
   try {
     if (command === "random") return await runRandom(args);
     if (command === "compose") return await runCompose(args);
+    if (command === "share") return await runShare(args);
     if (command === "event") return await runEvent(args);
     if (command === "id") return runId(args);
     printUsage();

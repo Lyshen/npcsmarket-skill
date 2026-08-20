@@ -45,3 +45,23 @@ export async function trackEvent(input, options = {}) {
     options,
   );
 }
+
+export async function shareConversation(input, options = {}) {
+  if (input.consent !== true) {
+    throw new Error("shareConversation requires consent: true");
+  }
+
+  const payload = withClientIdentity(
+    {
+      consent: true,
+      npcName: input.npcName,
+      topic: input.topic,
+      title: input.title,
+      excerpt: input.excerpt,
+    },
+    options,
+  );
+  if (input.npcSlug) payload.npcSlug = input.npcSlug;
+
+  return postJson("/v1/share", payload, options);
+}

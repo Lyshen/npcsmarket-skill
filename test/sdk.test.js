@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
+import { composePrompt, trackEvent } from "../src/index.js";
 import { getJson, postJson } from "../src/http.js";
 
 test("getJson sends request and parses body", async () => {
@@ -56,4 +57,56 @@ test("postJson throws API error message", async () => {
     ),
     /D1 database is not configured/,
   );
+});
+
+test("composePrompt sends minimal client identity", async () => {
+  let sentBody = "";
+  await composePrompt(
+    { topic: "AI strategy", npcSlug: "sun-tzu", mode: "advisor" },
+    {
+      baseUrl: "https://example.com",
+      clientId: "client-123",
+      fetchImpl: async (_url, init) => {
+        sentBody = String(init.body);
+        return new Response(JSON.stringify({ ok: true }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        });
+      },
+    },
+  );
+
+  assert.deepEqual(JSON.parse(sentBody), {
+    topic: "AI strategy",
+    mode: "advisor",
+    clientId: "client-123",
+    source: "codex-plugin",
+    npcSlug: "sun-tzu",
+  });
+});
+
+test("trackEvent sends minimal client identity", async () => {
+  let sentBody = "";
+  await trackEvent(
+    { eventName: "skill_open", npcSlug: "meadows", metadata: { mode: "debate" } },
+    {
+      baseUrl: "https://example.com",
+      clientId: "client-123",
+      fetchImpl: async (_url, init) => {
+        sentBody = String(init.body);
+        return new Response(JSON.stringify({ ok: true }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        });
+      },
+    },
+  );
+
+  assert.deepEqual(JSON.parse(sentBody), {
+    eventName: "skill_open",
+    npcSlug: "meadows",
+    metadata: { mode: "debate" },
+    clientId: "client-123",
+    source: "codex-plugin",
+  });
 });

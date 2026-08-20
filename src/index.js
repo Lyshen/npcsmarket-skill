@@ -4,6 +4,7 @@ import { getJson, postJson } from "./http.js";
 export { getClientId } from "./client-id.js";
 
 const CLIENT_SOURCE = "codex-plugin";
+const FEEDBACK_SENTIMENTS = new Set(["good", "bad", "other"]);
 
 function withClientIdentity(payload, options = {}) {
   return {
@@ -64,4 +65,22 @@ export async function shareConversation(input, options = {}) {
   if (input.npcSlug) payload.npcSlug = input.npcSlug;
 
   return postJson("/v1/share", payload, options);
+}
+
+export async function sendFeedback(input, options = {}) {
+  if (!FEEDBACK_SENTIMENTS.has(input.sentiment)) {
+    throw new Error("feedback sentiment must be good, bad, or other");
+  }
+
+  const payload = withClientIdentity(
+    {
+      sentiment: input.sentiment,
+    },
+    options,
+  );
+  if (input.npcSlug) payload.npcSlug = input.npcSlug;
+  if (input.note) payload.note = input.note;
+  if (input.contactEmail) payload.contactEmail = input.contactEmail;
+
+  return postJson("/v1/feedback", payload, options);
 }

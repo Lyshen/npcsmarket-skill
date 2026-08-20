@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { composePrompt, shareConversation, trackEvent } from "../src/index.js";
+import { composePrompt, sendFeedback, shareConversation, trackEvent } from "../src/index.js";
 import { getJson, postJson } from "../src/http.js";
 
 test("getJson sends request and parses body", async () => {
@@ -159,5 +159,77 @@ test("shareConversation sends minimal public excerpt payload", async () => {
     clientId: "client-123",
     source: "codex-plugin",
     npcSlug: "meadows",
+  });
+});
+
+test("sendFeedback rejects invalid sentiment", async () => {
+  await assert.rejects(
+    sendFeedback({
+      sentiment: "maybe",
+      note: "Not sure.",
+    }),
+    /good, bad, or other/,
+  );
+});
+
+test("sendFeedback sends minimal experience payload", async () => {
+  let sentBody = "";
+  await sendFeedback(
+    {
+      sentiment: "bad",
+      npcSlug: "meadows",
+      note: "The persona broke voice.",
+    },
+    {
+      baseUrl: "https://example.com",
+      clientId: "client-123",
+      fetchImpl: async (_url, init) => {
+        sentBody = String(init.body);
+        return new Response(JSON.stringify({ ok: true }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        });
+      },
+    },
+  );
+
+  assert.deepEqual(JSON.parse(sentBody), {
+    sentiment: "bad",
+    clientId: "client-123",
+    source: "codex-plugin",
+    npcSlug: "meadows",
+    note: "The persona broke voice.",
+  });
+});
+
+test("sendFeedback sends contact email only when explicitly provided", async () => {
+  let sentBody = "";
+  await sendFeedback(
+    {
+      sentiment: "good",
+      npcSlug: "meadows",
+      note: "Please follow up.",
+      contactEmail: "user@example.com",
+    },
+    {
+      baseUrl: "https://example.com",
+      clientId: "client-123",
+      fetchImpl: async (_url, init) => {
+        sentBody = String(init.body);
+        return new Response(JSON.stringify({ ok: true }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        });
+      },
+    },
+  );
+
+  assert.deepEqual(JSON.parse(sentBody), {
+    sentiment: "good",
+    clientId: "client-123",
+    source: "codex-plugin",
+    npcSlug: "meadows",
+    note: "Please follow up.",
+    contactEmail: "user@example.com",
   });
 });

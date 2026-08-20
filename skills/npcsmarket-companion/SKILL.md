@@ -35,6 +35,8 @@ NPCsMarket is a Codex companion for thinking through product, design, marketing,
 4. Choose `advisor` mode for plans and tradeoffs, `debate` mode for challenging assumptions, and `socratic` mode for clarifying questions.
 5. Use the returned `character.prompt` and `framework.steps` to reason like the selected figure, then answer directly in first person as that figure.
 6. Keep the answer practical for a developer who may be waiting on tests, installs, builds, reviews, or another Codex task.
+7. Use `create_share` only when the user explicitly asks to publish/share a short excerpt and has approved the exact content to make public.
+8. Use `send_feedback` only when the user explicitly rates the experience or asks you to report good/bad feedback. Include `contactEmail` only when the user explicitly provides an email and agrees to be contacted about the feedback.
 
 ## Useful Angles
 
@@ -53,4 +55,7 @@ NPCsMarket is a Codex companion for thinking through product, design, marketing,
 - If the tool returns a specific NPC, preserve that NPC's voice and do not switch to a generic assistant narrator.
 - Do not use NPCsMarket for regulated medical, legal, or financial decisions.
 - Do not send full source files or private secrets to the tool; summarize the specific question or tradeoff instead.
+- Do not call `create_share` with a full transcript, private content, secrets, or unapproved text.
+- Do not infer feedback from silence or ordinary conversation; only report explicit user feedback.
+- Do not add contact email to feedback unless the user explicitly opts in for follow-up.
 - If the user wants a normal coding answer without a persona, answer normally without invoking NPCsMarket.

@@ -4,16 +4,16 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
-import { composePrompt, randomNpc } from "../src/index.js";
+import { composePrompt, randomNpc, sendFeedback, shareConversation } from "../src/index.js";
 
 const server = new McpServer(
   {
     name: "npcsmarket",
-    version: "0.2.3",
+    version: "0.2.4",
   },
   {
     instructions:
-      "NPCsMarket helps Codex users discuss product, design, strategy, marketing, and engineering questions through historical personas and practical thinking modes. Use random_npc to discover candidates and compose_prompt to build a focused prompt for the user's topic.",
+      "NPCsMarket helps Codex users discuss product, design, strategy, marketing, and engineering questions through historical personas and practical thinking modes. Use random_npc to discover candidates and compose_prompt to build a focused prompt for the user's topic. Use create_share only when the user explicitly asks to publish a short approved excerpt. Use send_feedback only when the user explicitly rates the experience or asks you to report feedback.",
   },
 );
 
@@ -92,6 +92,66 @@ server.registerTool(
   async ({ topic, mode, npcName, npcSlug }) => {
     const response = withCodexVoiceContract(
       stripInternalFields(await composePrompt({ topic, mode, npcName, npcSlug })),
+    );
+    return {
+      content: [{ type: "text", text: JSON.stringify(response, null, 2) }],
+      structuredContent: response,
+    };
+  },
+);
+
+server.registerTool(
+  "create_share",
+  {
+    title: "Create public share",
+    description:
+      "Create a public NPCsMarket share page from a short excerpt only after the user explicitly approves publishing that excerpt.",
+    inputSchema: {
+      consent: z.literal(true),
+      npcName: z.string().min(1).max(200),
+      topic: z.string().min(1).max(800),
+      title: z.string().min(1).max(160),
+      excerpt: z.string().min(1).max(4000),
+      npcSlug: z.string().min(1).max(120).optional(),
+    },
+    annotations: {
+      readOnlyHint: false,
+      openWorldHint: true,
+      destructiveHint: false,
+    },
+  },
+  async ({ consent, npcName, topic, title, excerpt, npcSlug }) => {
+    const response = stripInternalFields(
+      await shareConversation({ consent, npcName, topic, title, excerpt, npcSlug }),
+    );
+    return {
+      content: [{ type: "text", text: JSON.stringify(response, null, 2) }],
+      structuredContent: response,
+    };
+  },
+);
+
+server.registerTool(
+  "send_feedback",
+  {
+    title: "Send feedback",
+    description:
+      "Report a simple good, bad, or other experience signal for NPCsMarket after the user explicitly gives feedback. Include contactEmail only when the user explicitly agrees to be contacted about the feedback.",
+    inputSchema: {
+      sentiment: z.enum(["good", "bad", "other"]),
+      npcSlug: z.string().min(1).max(120).optional(),
+      note: z.string().min(1).max(1000).optional(),
+      contactEmail: z.string().email().max(254).optional(),
+    },
+    annotations: {
+      readOnlyHint: false,
+      openWorldHint: true,
+      destructiveHint: false,
+    },
+  },
+  async ({ sentiment, npcSlug, note, contactEmail }) => {
+    const response = stripInternalFields(
+      await sendFeedback({ sentiment, npcSlug, note, contactEmail }),
     );
     return {
       content: [{ type: "text", text: JSON.stringify(response, null, 2) }],

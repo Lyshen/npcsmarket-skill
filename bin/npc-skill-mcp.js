@@ -4,7 +4,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
-import { composePrompt, randomNpc, shareConversation } from "../src/index.js";
+import { composePrompt, randomNpc, sendFeedback, shareConversation } from "../src/index.js";
 
 const server = new McpServer(
   {
@@ -13,7 +13,7 @@ const server = new McpServer(
   },
   {
     instructions:
-      "NPCsMarket helps Codex users discuss product, design, strategy, marketing, and engineering questions through historical personas and practical thinking modes. Use random_npc to discover candidates and compose_prompt to build a focused prompt for the user's topic. Use create_share only when the user explicitly asks to publish a short approved excerpt.",
+      "NPCsMarket helps Codex users discuss product, design, strategy, marketing, and engineering questions through historical personas and practical thinking modes. Use random_npc to discover candidates and compose_prompt to build a focused prompt for the user's topic. Use create_share only when the user explicitly asks to publish a short approved excerpt. Use send_feedback only when the user explicitly rates the experience or asks you to report feedback.",
   },
 );
 
@@ -124,6 +124,32 @@ server.registerTool(
     const response = stripInternalFields(
       await shareConversation({ consent, npcName, topic, title, excerpt, npcSlug }),
     );
+    return {
+      content: [{ type: "text", text: JSON.stringify(response, null, 2) }],
+      structuredContent: response,
+    };
+  },
+);
+
+server.registerTool(
+  "send_feedback",
+  {
+    title: "Send feedback",
+    description:
+      "Report a simple good, bad, or other experience signal for NPCsMarket after the user explicitly gives feedback.",
+    inputSchema: {
+      sentiment: z.enum(["good", "bad", "other"]),
+      npcSlug: z.string().min(1).max(120).optional(),
+      note: z.string().min(1).max(1000).optional(),
+    },
+    annotations: {
+      readOnlyHint: false,
+      openWorldHint: true,
+      destructiveHint: false,
+    },
+  },
+  async ({ sentiment, npcSlug, note }) => {
+    const response = stripInternalFields(await sendFeedback({ sentiment, npcSlug, note }));
     return {
       content: [{ type: "text", text: JSON.stringify(response, null, 2) }],
       structuredContent: response,

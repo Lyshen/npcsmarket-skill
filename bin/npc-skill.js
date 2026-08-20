@@ -1,6 +1,13 @@
 #!/usr/bin/env node
 
-import { composePrompt, getClientId, randomNpc, shareConversation, trackEvent } from "../src/index.js";
+import {
+  composePrompt,
+  getClientId,
+  randomNpc,
+  sendFeedback,
+  shareConversation,
+  trackEvent,
+} from "../src/index.js";
 import { resetClientId } from "../src/client-id.js";
 
 function printUsage() {
@@ -12,6 +19,7 @@ function printUsage() {
       "  random [--count 1|3] [--json]",
       "  compose --topic <text> [--name <npcName> | --slug <npcSlug>] [--mode socratic|debate|advisor] [--json]",
       "  share --name <npcName> --topic <text> --title <text> --excerpt <text> --consent [--slug <npcSlug>] [--json]",
+      "  feedback --sentiment good|bad|other [--slug <npcSlug>] [--note <text>] [--json]",
       "  event --name <eventName> [--slug <npcSlug>] [--meta '{\"k\":\"v\"}'] [--json]",
       "  id [--reset]",
       "",
@@ -117,6 +125,19 @@ async function runShare(args) {
   process.stdout.write(`${result.share.url}\n`);
 }
 
+async function runFeedback(args) {
+  const sentiment = getFlag(args, "--sentiment");
+  const npcSlug = getFlag(args, "--slug") ?? undefined;
+  const note = getFlag(args, "--note") ?? undefined;
+  const baseUrl = getFlag(args, "--base-url") ?? undefined;
+
+  if (!sentiment) throw new Error("Missing --sentiment");
+
+  const result = await sendFeedback({ sentiment, npcSlug, note }, { baseUrl });
+  if (hasFlag(args, "--json")) return printJson(result);
+  process.stdout.write("ok\n");
+}
+
 function runId(args) {
   const clientId = hasFlag(args, "--reset") ? resetClientId() : getClientId();
   process.stdout.write(`${clientId}\n`);
@@ -133,6 +154,7 @@ async function main() {
     if (command === "random") return await runRandom(args);
     if (command === "compose") return await runCompose(args);
     if (command === "share") return await runShare(args);
+    if (command === "feedback") return await runFeedback(args);
     if (command === "event") return await runEvent(args);
     if (command === "id") return runId(args);
     printUsage();

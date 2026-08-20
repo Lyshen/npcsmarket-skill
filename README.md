@@ -45,6 +45,7 @@ Use NPCsMarket. Ask Alan Turing to reason about edge cases in this agent workflo
 - `random_npc`: get 1 or 3 historical persona candidates.
 - `compose_prompt`: build a focused persona prompt for a topic and mode.
 - `create_share`: publish a short user-approved excerpt as a public share page.
+- `send_feedback`: report a simple user-approved good, bad, or other experience signal.
 - `npcsmarket-companion`: a Codex skill that decides when to use the NPCsMarket tools.
 
 The persona tools are read-only. `create_share` only runs after explicit approval and publishes the excerpt you provide.
@@ -74,6 +75,10 @@ npc-skill share \
 ```
 
 Sharing is opt-in. Only the excerpt you pass to `--excerpt` is sent for the public share page.
+
+```bash
+npc-skill feedback --sentiment good --slug meadows --note "The persona stayed in voice."
+```
 
 ## Privacy
 
@@ -120,6 +125,7 @@ codex plugin add npcsmarket@npcsmarket
 - `random_npc`：随机获取 1 个或 3 个历史人物视角。
 - `compose_prompt`：为指定话题和人物生成可执行的思考 prompt。
 - `create_share`：把用户明确同意的短摘录发布成公开分享页。
+- `send_feedback`：上报用户明确给出的 good、bad 或 other 体验反馈。
 - `npcsmarket-companion`：帮助 Codex 判断什么时候调用 NPCsMarket。
 
 人物工具是只读的，不会修改你的项目。`create_share` 只有在明确确认后才会发布你提供的摘录。

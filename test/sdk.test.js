@@ -1,7 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { composePrompt, sendFeedback, shareConversation, trackEvent } from "../src/index.js";
+import {
+  composePrompt,
+  getPersonaDossier,
+  sendFeedback,
+  shareConversation,
+  trackEvent,
+} from "../src/index.js";
 import { getJson, postJson } from "../src/http.js";
 
 test("getJson sends request and parses body", async () => {
@@ -83,6 +89,33 @@ test("composePrompt sends minimal client identity", async () => {
     source: "codex-plugin",
     npcSlug: "sun-tzu",
   });
+});
+
+test("getPersonaDossier fetches v2 persona dossier by slug", async () => {
+  let calledUrl = "";
+  const body = await getPersonaDossier(
+    { npcSlug: "meadows" },
+    {
+      baseUrl: "https://example.com",
+      fetchImpl: async (url) => {
+        calledUrl = url;
+        return new Response(
+          JSON.stringify({ ok: true, dossier: { format: "npc-dossier.v2" } }),
+          {
+            status: 200,
+            headers: { "content-type": "application/json" },
+          },
+        );
+      },
+    },
+  );
+
+  assert.equal(calledUrl, "https://example.com/v2/persona/meadows");
+  assert.equal(body.dossier.format, "npc-dossier.v2");
+});
+
+test("getPersonaDossier requires npcSlug", async () => {
+  await assert.rejects(getPersonaDossier({}), /Missing npcSlug/);
 });
 
 test("trackEvent sends minimal client identity", async () => {

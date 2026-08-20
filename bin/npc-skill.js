@@ -2,6 +2,7 @@
 
 import {
   composePrompt,
+  getPersonaDossier,
   getClientId,
   randomNpc,
   sendFeedback,
@@ -17,6 +18,7 @@ function printUsage() {
       "",
       "Commands:",
       "  random [--count 1|3] [--json]",
+      "  dossier --slug <npcSlug> [--json]",
       "  compose --topic <text> [--name <npcName> | --slug <npcSlug>] [--mode socratic|debate|advisor] [--json]",
       "  share --name <npcName> --topic <text> --title <text> --excerpt <text> --consent [--slug <npcSlug>] [--json]",
       "  feedback --sentiment good|bad|other [--slug <npcSlug>] [--note <text>] [--json]",
@@ -79,6 +81,32 @@ async function runCompose(args) {
       "",
       "Followups:",
       ...result.bundle.prompts.followups.map((line, idx) => `${idx + 1}. ${line}`),
+      "",
+    ].join("\n"),
+  );
+}
+
+async function runDossier(args) {
+  const npcSlug = getFlag(args, "--slug");
+  const baseUrl = getFlag(args, "--base-url") ?? undefined;
+
+  if (!npcSlug) throw new Error("Missing --slug");
+
+  const result = await getPersonaDossier({ npcSlug }, { baseUrl });
+  if (hasFlag(args, "--json")) return printJson(result);
+
+  const dossier = result.dossier;
+  process.stdout.write(
+    [
+      `NPC: ${dossier.npc.name} (${dossier.npc.slug})`,
+      `Role: ${dossier.npc.role}`,
+      `Tagline: ${dossier.npc.tagline}`,
+      "",
+      "Reasoning DNA:",
+      ...dossier.reasoning.dna.map((line) => `- ${line}`),
+      "",
+      "Memory:",
+      ...dossier.memory.slice(0, 5).map((line) => `- ${line}`),
       "",
     ].join("\n"),
   );
@@ -152,6 +180,7 @@ async function main() {
 
   try {
     if (command === "random") return await runRandom(args);
+    if (command === "dossier") return await runDossier(args);
     if (command === "compose") return await runCompose(args);
     if (command === "share") return await runShare(args);
     if (command === "feedback") return await runFeedback(args);

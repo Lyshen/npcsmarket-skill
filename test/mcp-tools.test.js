@@ -8,7 +8,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-test("MCP server lists write tools with explicit contracts", async () => {
+test("MCP server lists dossier and write tools with explicit contracts", async () => {
   const client = new Client({ name: "npcsmarket-test", version: "1.0.0" });
   const transport = new StdioClientTransport({
     command: process.execPath,
@@ -21,7 +21,12 @@ test("MCP server lists write tools with explicit contracts", async () => {
     await client.connect(transport);
     const result = await client.listTools();
     const createShare = result.tools.find((item) => item.name === "create_share");
+    const getDossier = result.tools.find((item) => item.name === "get_persona_dossier");
     const sendFeedback = result.tools.find((item) => item.name === "send_feedback");
+
+    assert.ok(getDossier);
+    assert.equal(getDossier.annotations?.readOnlyHint, true);
+    assert.deepEqual(getDossier.inputSchema.required, ["npcSlug"]);
 
     assert.ok(createShare);
     assert.equal(createShare.annotations?.readOnlyHint, false);

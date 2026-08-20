@@ -80,9 +80,12 @@ Sharing is opt-in. Only the excerpt you pass to `--excerpt` is sent for the publ
 npc-skill feedback --sentiment good --slug meadows --note "The persona stayed in voice."
 ```
 
+If you want NPCsMarket to contact you about a feedback report, add
+`--contact-email you@example.com`. Contact email is optional and only used for admin follow-up.
+
 ## Privacy
 
-NPCsMarket sends the topic you provide to `https://npcsmarket.com` when composing a prompt bundle. Do not include secrets, full source files, credentials, or private customer data in the topic. The package may create a local client id in `~/.npcsmarket-skill/config.json` for lightweight diagnostics.
+NPCsMarket sends the topic you provide to `https://npcsmarket.com` when composing a prompt bundle. Sharing sends only the excerpt you approve. Feedback sends the sentiment, optional note, and optional contact email only when you provide one for follow-up. Do not include secrets, full source files, credentials, or private customer data. The package may create a local client id in `~/.npcsmarket-skill/config.json` for lightweight diagnostics.
 
 <a id="中文"></a>
 ## 中文
@@ -135,3 +138,4 @@ codex plugin add npcsmarket@npcsmarket
 NPCsMarket 在生成 prompt bundle 时会把你输入的话题发送到 `https://npcsmarket.com`。不要输入密钥、完整源码、凭据或客户隐私数据。这个包可能会在本地 `~/.npcsmarket-skill/config.json` 创建一个 client id，用于轻量诊断。
 
 分享功能需要显式确认。只有你传给 `--excerpt` 的内容会用于公开分享页。
+反馈可以选择留下联系邮箱，用于 admin 后续联系了解问题；不填则不会发送。

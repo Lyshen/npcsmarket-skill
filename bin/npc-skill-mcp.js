@@ -136,11 +136,12 @@ server.registerTool(
   {
     title: "Send feedback",
     description:
-      "Report a simple good, bad, or other experience signal for NPCsMarket after the user explicitly gives feedback.",
+      "Report a simple good, bad, or other experience signal for NPCsMarket after the user explicitly gives feedback. Include contactEmail only when the user explicitly agrees to be contacted about the feedback.",
     inputSchema: {
       sentiment: z.enum(["good", "bad", "other"]),
       npcSlug: z.string().min(1).max(120).optional(),
       note: z.string().min(1).max(1000).optional(),
+      contactEmail: z.string().email().max(254).optional(),
     },
     annotations: {
       readOnlyHint: false,
@@ -148,8 +149,10 @@ server.registerTool(
       destructiveHint: false,
     },
   },
-  async ({ sentiment, npcSlug, note }) => {
-    const response = stripInternalFields(await sendFeedback({ sentiment, npcSlug, note }));
+  async ({ sentiment, npcSlug, note, contactEmail }) => {
+    const response = stripInternalFields(
+      await sendFeedback({ sentiment, npcSlug, note, contactEmail }),
+    );
     return {
       content: [{ type: "text", text: JSON.stringify(response, null, 2) }],
       structuredContent: response,

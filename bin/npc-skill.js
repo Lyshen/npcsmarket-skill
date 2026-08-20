@@ -19,7 +19,7 @@ function printUsage() {
       "  random [--count 1|3] [--json]",
       "  compose --topic <text> [--name <npcName> | --slug <npcSlug>] [--mode socratic|debate|advisor] [--json]",
       "  share --name <npcName> --topic <text> --title <text> --excerpt <text> --consent [--slug <npcSlug>] [--json]",
-      "  feedback --sentiment good|bad|other [--slug <npcSlug>] [--note <text>] [--json]",
+      "  feedback --sentiment good|bad|other [--slug <npcSlug>] [--note <text>] [--contact-email <email>] [--json]",
       "  event --name <eventName> [--slug <npcSlug>] [--meta '{\"k\":\"v\"}'] [--json]",
       "  id [--reset]",
       "",
@@ -129,11 +129,12 @@ async function runFeedback(args) {
   const sentiment = getFlag(args, "--sentiment");
   const npcSlug = getFlag(args, "--slug") ?? undefined;
   const note = getFlag(args, "--note") ?? undefined;
+  const contactEmail = getFlag(args, "--contact-email") ?? undefined;
   const baseUrl = getFlag(args, "--base-url") ?? undefined;
 
   if (!sentiment) throw new Error("Missing --sentiment");
 
-  const result = await sendFeedback({ sentiment, npcSlug, note }, { baseUrl });
+  const result = await sendFeedback({ sentiment, npcSlug, note, contactEmail }, { baseUrl });
   if (hasFlag(args, "--json")) return printJson(result);
   process.stdout.write("ok\n");
 }

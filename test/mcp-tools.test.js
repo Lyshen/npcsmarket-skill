@@ -44,6 +44,7 @@ test("MCP server lists write tools with explicit contracts", async () => {
       "bad",
       "other",
     ]);
+    assert.equal(sendFeedback.inputSchema.properties?.contactEmail?.format, "email");
   } finally {
     await client.close();
   }

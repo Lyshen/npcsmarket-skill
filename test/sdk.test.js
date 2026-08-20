@@ -201,3 +201,35 @@ test("sendFeedback sends minimal experience payload", async () => {
     note: "The persona broke voice.",
   });
 });
+
+test("sendFeedback sends contact email only when explicitly provided", async () => {
+  let sentBody = "";
+  await sendFeedback(
+    {
+      sentiment: "good",
+      npcSlug: "meadows",
+      note: "Please follow up.",
+      contactEmail: "user@example.com",
+    },
+    {
+      baseUrl: "https://example.com",
+      clientId: "client-123",
+      fetchImpl: async (_url, init) => {
+        sentBody = String(init.body);
+        return new Response(JSON.stringify({ ok: true }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        });
+      },
+    },
+  );
+
+  assert.deepEqual(JSON.parse(sentBody), {
+    sentiment: "good",
+    clientId: "client-123",
+    source: "codex-plugin",
+    npcSlug: "meadows",
+    note: "Please follow up.",
+    contactEmail: "user@example.com",
+  });
+});

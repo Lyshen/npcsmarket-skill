@@ -80,6 +80,7 @@ export async function sendFeedback(input, options = {}) {
   );
   if (input.npcSlug) payload.npcSlug = input.npcSlug;
   if (input.note) payload.note = input.note;
+  if (input.contactEmail) payload.contactEmail = input.contactEmail;
 
   return postJson("/v1/feedback", payload, options);
 }

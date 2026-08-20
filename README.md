@@ -43,12 +43,13 @@ Use NPCsMarket. Ask Alan Turing to reason about edge cases in this agent workflo
 ## What It Adds
 
 - `random_npc`: get 1 or 3 historical persona candidates.
+- `get_persona_dossier`: fetch a v2 persona dossier with legend, reasoning DNA, memory fragments, and examples.
 - `compose_prompt`: build a focused persona prompt for a topic and mode.
 - `create_share`: publish a short user-approved excerpt as a public share page.
 - `send_feedback`: report a simple user-approved good, bad, or other experience signal.
 - `npcsmarket-companion`: a Codex skill that decides when to use the NPCsMarket tools.
 
-The persona tools are read-only. `create_share` only runs after explicit approval and publishes the excerpt you provide.
+The persona and dossier tools are read-only. `create_share` and `send_feedback` only run after explicit user intent.
 
 ## CLI
 
@@ -62,6 +63,10 @@ npc-skill compose \
   --name "Donella Meadows" \
   --topic "Find leverage points in our activation funnel" \
   --mode advisor
+```
+
+```bash
+npc-skill dossier --slug meadows
 ```
 
 ```bash
@@ -82,7 +87,7 @@ npc-skill feedback --sentiment good --slug meadows --note "The persona stayed in
 
 ## Privacy
 
-NPCsMarket sends the topic you provide to `https://npcsmarket.com` when composing a prompt bundle. Do not include secrets, full source files, credentials, or private customer data in the topic. The package may create a local client id in `~/.npcsmarket-skill/config.json` for lightweight diagnostics.
+NPCsMarket sends the topic you provide to `https://npcsmarket.com` when composing a prompt bundle. Dossier lookup sends an NPC slug. Sharing sends only the excerpt you approve. Feedback sends the sentiment and optional note you provide. Do not include secrets, full source files, credentials, or private customer data. The package may create a local client id in `~/.npcsmarket-skill/config.json` for lightweight diagnostics.
 
 <a id="中文"></a>
 ## 中文
@@ -123,15 +128,16 @@ codex plugin add npcsmarket@npcsmarket
 ## 包含内容
 
 - `random_npc`：随机获取 1 个或 3 个历史人物视角。
+- `get_persona_dossier`：获取包含人物背景、推理 DNA、记忆片段和示例的 v2 dossier。
 - `compose_prompt`：为指定话题和人物生成可执行的思考 prompt。
 - `create_share`：把用户明确同意的短摘录发布成公开分享页。
 - `send_feedback`：上报用户明确给出的 good、bad 或 other 体验反馈。
 - `npcsmarket-companion`：帮助 Codex 判断什么时候调用 NPCsMarket。
 
-人物工具是只读的，不会修改你的项目。`create_share` 只有在明确确认后才会发布你提供的摘录。
+人物和 dossier 工具是只读的，不会修改你的项目。`create_share` 和 `send_feedback` 只有在用户明确表达意图后才会执行。
 
 ## 隐私
 
-NPCsMarket 在生成 prompt bundle 时会把你输入的话题发送到 `https://npcsmarket.com`。不要输入密钥、完整源码、凭据或客户隐私数据。这个包可能会在本地 `~/.npcsmarket-skill/config.json` 创建一个 client id，用于轻量诊断。
+NPCsMarket 在生成 prompt bundle 时会把你输入的话题发送到 `https://npcsmarket.com`。dossier 查询只发送人物 slug。分享只发送你明确同意的摘录。反馈只发送 sentiment 和可选 note。不要输入密钥、完整源码、凭据或客户隐私数据。这个包可能会在本地 `~/.npcsmarket-skill/config.json` 创建一个 client id，用于轻量诊断。
 
 分享功能需要显式确认。只有你传给 `--excerpt` 的内容会用于公开分享页。

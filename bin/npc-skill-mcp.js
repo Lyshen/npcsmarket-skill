@@ -4,12 +4,18 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
-import { composePrompt, randomNpc, sendFeedback, shareConversation } from "../src/index.js";
+import {
+  composePrompt,
+  getPersonaDossier,
+  randomNpc,
+  sendFeedback,
+  shareConversation,
+} from "../src/index.js";
 
 const server = new McpServer(
   {
     name: "npcsmarket",
-    version: "0.2.3",
+    version: "0.3.0",
   },
   {
     instructions:
@@ -22,8 +28,30 @@ function stripInternalFields(response) {
   return publicResponse;
 }
 
-function withCodexVoiceContract(response) {
+function dossierVoiceContract(dossier) {
+  if (!dossier) return "";
+  const dna = Array.isArray(dossier.reasoning?.dna) ? dossier.reasoning.dna.slice(0, 6) : [];
+  const memory = Array.isArray(dossier.memory) ? dossier.memory.slice(0, 5) : [];
+  const examples = Array.isArray(dossier.examples) ? dossier.examples.slice(0, 2) : [];
+
+  return [
+    "",
+    "Persona dossier v2:",
+    dossier.profile?.legend ? `- Historical frame: ${dossier.profile.legend}` : "",
+    dna.length ? `- Reasoning DNA: ${dna.join(" | ")}` : "",
+    memory.length ? `- Memory fragments: ${memory.join(" | ")}` : "",
+    ...examples.flatMap((item, index) => [
+      `- Example ${index + 1} user: ${item.user}`,
+      `- Example ${index + 1} persona: ${item.npc}`,
+    ]),
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+function withCodexVoiceContract(response, dossierResponse) {
   if (!response?.bundle?.prompts?.starter || !response?.npc?.name) return response;
+  const dossier = dossierResponse?.dossier;
   const voiceContract = [
     "",
     "Codex persona contract:",
@@ -34,9 +62,11 @@ function withCodexVoiceContract(response) {
     "- Translate the user's modern topic into the persona's native concerns, values, tradeoffs, and blind spots.",
     "- Use the returned character.prompt and framework.steps as the primary reasoning contract.",
     "- Stay in this voice for follow-up debate unless the user asks to leave character.",
+    dossierVoiceContract(dossier),
   ].join("\n");
   return {
     ...response,
+    ...(dossier ? { dossier } : {}),
     bundle: {
       ...response.bundle,
       prompts: {
@@ -72,6 +102,30 @@ server.registerTool(
 );
 
 server.registerTool(
+  "get_persona_dossier",
+  {
+    title: "Get persona dossier",
+    description:
+      "Fetch the v2 persona dossier for a known NPC slug, including legend, reasoning DNA, memory fragments, and examples.",
+    inputSchema: {
+      npcSlug: z.string().min(1).max(120),
+    },
+    annotations: {
+      readOnlyHint: true,
+      openWorldHint: false,
+      destructiveHint: false,
+    },
+  },
+  async ({ npcSlug }) => {
+    const response = stripInternalFields(await getPersonaDossier({ npcSlug }));
+    return {
+      content: [{ type: "text", text: JSON.stringify(response, null, 2) }],
+      structuredContent: response,
+    };
+  },
+);
+
+server.registerTool(
   "compose_prompt",
   {
     title: "Compose NPC prompt",
@@ -90,9 +144,16 @@ server.registerTool(
     },
   },
   async ({ topic, mode, npcName, npcSlug }) => {
-    const response = withCodexVoiceContract(
-      stripInternalFields(await composePrompt({ topic, mode, npcName, npcSlug })),
-    );
+    const composed = stripInternalFields(await composePrompt({ topic, mode, npcName, npcSlug }));
+    let dossier;
+    if (composed?.npc?.slug) {
+      try {
+        dossier = stripInternalFields(await getPersonaDossier({ npcSlug: composed.npc.slug }));
+      } catch {
+        dossier = undefined;
+      }
+    }
+    const response = withCodexVoiceContract(composed, dossier);
     return {
       content: [{ type: "text", text: JSON.stringify(response, null, 2) }],
       structuredContent: response,

@@ -19,6 +19,12 @@ export async function randomNpc(options = {}) {
   return getJson(`/v1/random?count=${count}`, options);
 }
 
+export async function getPersonaDossier(input, options = {}) {
+  const slug = input?.npcSlug || input?.slug;
+  if (!slug) throw new Error("Missing npcSlug");
+  return getJson(`/v2/persona/${encodeURIComponent(slug)}`, options);
+}
+
 export async function composePrompt(input, options = {}) {
   const payload = withClientIdentity(
     {

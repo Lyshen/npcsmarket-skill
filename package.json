@@ -1,6 +1,6 @@
 {
   "name": "@npcsmarket/skill",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Codex plugin for historical personas and practical thinking modes.",
   "type": "module",
   "main": "./src/index.js",

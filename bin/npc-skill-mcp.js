@@ -9,7 +9,7 @@ import { composePrompt, randomNpc, sendFeedback, shareConversation } from "../sr
 const server = new McpServer(
   {
     name: "npcsmarket",
-    version: "0.2.4",
+    version: "0.2.5",
   },
   {
     instructions:

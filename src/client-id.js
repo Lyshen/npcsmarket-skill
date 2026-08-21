@@ -3,6 +3,9 @@ import { randomUUID } from "node:crypto";
 
 import { CONFIG_DIR, CONFIG_FILE } from "./config.js";
 
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 function readConfig() {
   try {
     const content = readFileSync(CONFIG_FILE, "utf8");
@@ -19,7 +22,7 @@ function writeConfig(config) {
 
 export function getClientId() {
   const config = readConfig();
-  if (typeof config.clientId === "string" && config.clientId.length > 0) {
+  if (typeof config.clientId === "string" && UUID_PATTERN.test(config.clientId)) {
     return config.clientId;
   }
   const clientId = randomUUID();

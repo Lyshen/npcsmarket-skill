@@ -5,11 +5,23 @@ export { getClientId } from "./client-id.js";
 
 const CLIENT_SOURCE = "codex-plugin";
 const FEEDBACK_SENTIMENTS = new Set(["good", "bad", "other"]);
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function getOptionClientId(options = {}) {
+  if (
+    typeof options.clientId === "string" &&
+    UUID_PATTERN.test(options.clientId)
+  ) {
+    return options.clientId;
+  }
+  return getClientId();
+}
 
 function withClientIdentity(payload, options = {}) {
   return {
     ...payload,
-    clientId: options.clientId || getClientId(),
+    clientId: getOptionClientId(options),
     source: CLIENT_SOURCE,
   };
 }

@@ -1,8 +1,15 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { composePrompt, sendFeedback, shareConversation, trackEvent } from "../src/index.js";
+import {
+  composePrompt,
+  sendFeedback,
+  shareConversation,
+  trackEvent,
+} from "../src/index.js";
 import { getJson, postJson } from "../src/http.js";
+
+const TEST_CLIENT_ID = "6ac8e6a1-6863-4ee4-86ff-91be38a683bf";
 
 test("getJson sends request and parses body", async () => {
   let calledUrl = "";
@@ -49,10 +56,16 @@ test("postJson throws API error message", async () => {
       {
         baseUrl: "https://example.com",
         fetchImpl: async () =>
-          new Response(JSON.stringify({ ok: false, error: "D1 database is not configured" }), {
-            status: 500,
-            headers: { "content-type": "application/json" },
-          }),
+          new Response(
+            JSON.stringify({
+              ok: false,
+              error: "D1 database is not configured",
+            }),
+            {
+              status: 500,
+              headers: { "content-type": "application/json" },
+            },
+          ),
       },
     ),
     /D1 database is not configured/,
@@ -65,7 +78,7 @@ test("composePrompt sends minimal client identity", async () => {
     { topic: "AI strategy", npcSlug: "sun-tzu", mode: "advisor" },
     {
       baseUrl: "https://example.com",
-      clientId: "client-123",
+      clientId: TEST_CLIENT_ID,
       fetchImpl: async (_url, init) => {
         sentBody = String(init.body);
         return new Response(JSON.stringify({ ok: true }), {
@@ -79,19 +92,43 @@ test("composePrompt sends minimal client identity", async () => {
   assert.deepEqual(JSON.parse(sentBody), {
     topic: "AI strategy",
     mode: "advisor",
-    clientId: "client-123",
+    clientId: TEST_CLIENT_ID,
     source: "codex-plugin",
     npcSlug: "sun-tzu",
   });
 });
 
-test("trackEvent sends minimal client identity", async () => {
+test("composePrompt ignores malformed client identity overrides", async () => {
   let sentBody = "";
-  await trackEvent(
-    { eventName: "skill_open", npcSlug: "meadows", metadata: { mode: "debate" } },
+  await composePrompt(
+    { topic: "AI strategy", npcSlug: "sun-tzu" },
     {
       baseUrl: "https://example.com",
       clientId: "client-123",
+      fetchImpl: async (_url, init) => {
+        sentBody = String(init.body);
+        return new Response(JSON.stringify({ ok: true }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        });
+      },
+    },
+  );
+
+  assert.notEqual(JSON.parse(sentBody).clientId, "client-123");
+});
+
+test("trackEvent sends minimal client identity", async () => {
+  let sentBody = "";
+  await trackEvent(
+    {
+      eventName: "skill_open",
+      npcSlug: "meadows",
+      metadata: { mode: "debate" },
+    },
+    {
+      baseUrl: "https://example.com",
+      clientId: TEST_CLIENT_ID,
       fetchImpl: async (_url, init) => {
         sentBody = String(init.body);
         return new Response(JSON.stringify({ ok: true }), {
@@ -106,7 +143,7 @@ test("trackEvent sends minimal client identity", async () => {
     eventName: "skill_open",
     npcSlug: "meadows",
     metadata: { mode: "debate" },
-    clientId: "client-123",
+    clientId: TEST_CLIENT_ID,
     source: "codex-plugin",
   });
 });
@@ -136,11 +173,14 @@ test("shareConversation sends minimal public excerpt payload", async () => {
     },
     {
       baseUrl: "https://example.com",
-      clientId: "client-123",
+      clientId: TEST_CLIENT_ID,
       fetchImpl: async (_url, init) => {
         sentBody = String(init.body);
         return new Response(
-          JSON.stringify({ ok: true, share: { id: "abc123", url: "https://example.com/s/abc123" } }),
+          JSON.stringify({
+            ok: true,
+            share: { id: "abc123", url: "https://example.com/s/abc123" },
+          }),
           {
             status: 200,
             headers: { "content-type": "application/json" },
@@ -156,7 +196,7 @@ test("shareConversation sends minimal public excerpt payload", async () => {
     topic: "Writing as a thinking channel",
     title: "Writing as context reconstruction",
     excerpt: "A user-approved public excerpt.",
-    clientId: "client-123",
+    clientId: TEST_CLIENT_ID,
     source: "codex-plugin",
     npcSlug: "meadows",
   });
@@ -182,7 +222,7 @@ test("sendFeedback sends minimal experience payload", async () => {
     },
     {
       baseUrl: "https://example.com",
-      clientId: "client-123",
+      clientId: TEST_CLIENT_ID,
       fetchImpl: async (_url, init) => {
         sentBody = String(init.body);
         return new Response(JSON.stringify({ ok: true }), {
@@ -195,7 +235,7 @@ test("sendFeedback sends minimal experience payload", async () => {
 
   assert.deepEqual(JSON.parse(sentBody), {
     sentiment: "bad",
-    clientId: "client-123",
+    clientId: TEST_CLIENT_ID,
     source: "codex-plugin",
     npcSlug: "meadows",
     note: "The persona broke voice.",
@@ -213,7 +253,7 @@ test("sendFeedback sends contact email only when explicitly provided", async () 
     },
     {
       baseUrl: "https://example.com",
-      clientId: "client-123",
+      clientId: TEST_CLIENT_ID,
       fetchImpl: async (_url, init) => {
         sentBody = String(init.body);
         return new Response(JSON.stringify({ ok: true }), {
@@ -226,7 +266,7 @@ test("sendFeedback sends contact email only when explicitly provided", async () 
 
   assert.deepEqual(JSON.parse(sentBody), {
     sentiment: "good",
-    clientId: "client-123",
+    clientId: TEST_CLIENT_ID,
     source: "codex-plugin",
     npcSlug: "meadows",
     note: "Please follow up.",
